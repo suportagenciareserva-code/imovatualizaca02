@@ -21,11 +21,11 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-bold text-lg mb-4">Imóveis</h3>
             <ul className="space-y-2">
-              <li><Link to="/destaques" className="hover:text-blue-400 transition-colors">Destaques</Link></li>
-              <li><Link to="/lancamentos" className="hover:text-blue-400 transition-colors">Lançamentos</Link></li>
-              <li><Link to="/busca-detalhada" className="hover:text-blue-400 transition-colors">Busca detalhada</Link></li>
-              <li><Link to="/solicitar" className="hover:text-blue-400 transition-colors">Solicite um imóvel</Link></li>
-              <li><Link to="/anunciar" className="hover:text-blue-400 transition-colors">Anunciar imóveis</Link></li>
+              <li><Link to="/destaques" className="hover:text-red-400 transition-colors">Destaques</Link></li>
+              <li><Link to="/lancamentos" className="hover:text-red-400 transition-colors">Lançamentos</Link></li>
+              <li><Link to="/busca-detalhada" className="hover:text-red-400 transition-colors">Busca detalhada</Link></li>
+              <li><Link to="/solicitar" className="hover:text-red-400 transition-colors">Solicite um imóvel</Link></li>
+              <li><Link to="/anunciar" className="hover:text-red-400 transition-colors">Anunciar imóveis</Link></li>
             </ul>
           </div>
         </div>
