@@ -75,9 +75,9 @@ const Header = () => {
             <Link to="/" className="flex items-center">
               <div className="flex items-center gap-3">
                 <img 
-                  src="https://customer-assets.emergentagent.com/job_imoveis-brasil-2/artifacts/v0od9o1u_1766871099770.jpg" 
-                  alt="ImovLocal"
-                  className="h-16 w-auto"
+                  src="/assets/images/logo/logo-completa.png" 
+                  alt="ImovLocal - Portal Imobiliário"
+                  className="h-12 w-auto md:h-16 hover:scale-105 transition-transform duration-300"
                 />
               </div>
             </Link>
