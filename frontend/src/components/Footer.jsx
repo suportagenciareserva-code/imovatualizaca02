@@ -51,9 +51,9 @@ const Footer = () => {
             <div className="text-center md:text-right">
               <div className="flex items-center justify-center md:justify-end">
                 <img 
-                  src="https://customer-assets.emergentagent.com/job_imoveis-brasil-2/artifacts/v0od9o1u_1766871099770.jpg" 
-                  alt="ImovLocal"
-                  className="h-12 w-auto"
+                  src="/assets/images/logo/logo-texto.png" 
+                  alt="ImovLocal - Portal Imobiliário"
+                  className="h-10 w-auto opacity-90"
                 />
               </div>
               <p className="text-sm text-gray-400 mt-2">Sua Referência em Imóveis</p>
