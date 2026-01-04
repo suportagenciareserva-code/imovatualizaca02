@@ -75,9 +75,10 @@ const Header = () => {
             <Link to="/" className="flex items-center">
               <div className="flex items-center gap-3">
                 <img 
-                  src="/assets/images/logo/logo-completa.png" 
+                  src="/assets/images/logo/logo-principal.png" 
                   alt="ImovLocal - Portal Imobiliário"
-                  className="h-12 w-auto md:h-16 hover:scale-105 transition-transform duration-300"
+                  className="h-12 w-auto md:h-14 lg:h-16 hover:scale-105 transition-transform duration-300"
+                  data-testid="logo-header"
                 />
               </div>
             </Link>
