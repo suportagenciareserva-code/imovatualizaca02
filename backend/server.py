@@ -12,6 +12,7 @@ from routes.auth_routes import router as auth_router
 from routes.property_routes import router as property_router
 from routes.admin_routes import router as admin_router
 from routes.visit_routes import router as visit_router, notifications_router
+from routes.banner_routes import router as banner_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
