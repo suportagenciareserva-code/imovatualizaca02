@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import PropertyCard from '../components/PropertyCard';
+import BannerDisplay from '../components/BannerDisplay';
 import Footer from '../components/Footer';
 import { propertiesAPI } from '../services/api';
 import { Link } from 'react-router-dom';
