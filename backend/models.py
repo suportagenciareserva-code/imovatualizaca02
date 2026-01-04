@@ -74,6 +74,56 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
+
+# ==========================================
+# SISTEMA DE BANNERS PUBLICITÁRIOS
+# ==========================================
+
+class BannerPosition(str, Enum):
+    home_topo = "home_topo"                 # Topo da home page
+    home_meio = "home_meio"                 # Entre destaques e lançamentos
+    busca_lateral = "busca_lateral"         # Lateral da busca detalhada
+    busca_topo = "busca_topo"               # Topo da página de busca
+    imovel_lateral = "imovel_lateral"       # Lateral da página de detalhes
+    rodape = "rodape"                       # Banner no rodapé
+
+class BannerStatus(str, Enum):
+    active = "active"
+    inactive = "inactive"
+
+class BannerCreate(BaseModel):
+    """Dados para criar um banner"""
+    title: str = Field(..., min_length=2, max_length=100, description="Título para identificação interna")
+    link_url: str = Field(..., description="URL de destino ao clicar no banner")
+    position: BannerPosition
+    order: int = Field(default=0, description="Ordem de exibição (menor número = maior prioridade)")
+    status: BannerStatus = BannerStatus.active
+
+class BannerUpdate(BaseModel):
+    """Dados para atualizar um banner"""
+    title: Optional[str] = None
+    link_url: Optional[str] = None
+    position: Optional[BannerPosition] = None
+    order: Optional[int] = None
+    status: Optional[BannerStatus] = None
+
+class Banner(BaseModel):
+    """Modelo completo de banner"""
+    id: str
+    title: str
+    image_url: str
+    link_url: str
+    position: BannerPosition
+    order: int
+    status: BannerStatus
+    clicks: int = 0  # Contador de cliques
+    views: int = 0   # Contador de visualizações
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
 class UserInDB(User):
     hashed_password: str
 
