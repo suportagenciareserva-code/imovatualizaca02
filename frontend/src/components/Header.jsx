@@ -39,12 +39,12 @@ const Header = () => {
           {isAuthenticated() && user && (
             <button
               onClick={() => navigate('/admin/notificacoes')}
-              className="hover:text-blue-300 transition-colors flex items-center gap-1 relative"
+              className="hover:text-red-400 transition-colors flex items-center gap-1 relative"
             >
               <Bell size={14} />
               Notificações
               {unreadCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -52,14 +52,14 @@ const Header = () => {
           )}
           <button 
             onClick={() => navigate('/cadastro')}
-            className="hover:text-blue-300 transition-colors flex items-center gap-1"
+            className="hover:text-red-400 transition-colors flex items-center gap-1"
           >
             <User size={14} />
             Cadastre-se
           </button>
           <button
             onClick={() => navigate(isAuthenticated() ? '/admin/dashboard' : '/login')}
-            className="hover:text-blue-300 transition-colors flex items-center gap-1"
+            className="hover:text-red-400 transition-colors flex items-center gap-1"
           >
             <LogIn size={14} />
             {isAuthenticated() ? 'Dashboard' : 'Área administrativa'}
