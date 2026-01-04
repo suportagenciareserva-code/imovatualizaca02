@@ -105,12 +105,12 @@ const Header = () => {
           {mobileMenuOpen && (
             <nav className="lg:hidden py-4 border-t">
               <div className="flex flex-col gap-3">
-                <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors py-2">Início</Link>
-                <Link to="/destaques" className="text-gray-700 hover:text-blue-600 transition-colors py-2">Destaques</Link>
-                <Link to="/lancamentos" className="text-gray-700 hover:text-blue-600 transition-colors py-2">Lançamentos</Link>
-                <Link to="/busca-detalhada" className="text-gray-700 hover:text-blue-600 transition-colors py-2">Busca Detalhada</Link>
-                <Link to="/anunciar" className="text-orange-500 hover:text-orange-600 transition-colors py-2">Anunciar</Link>
-                <Link to="/solicitar" className="text-gray-700 hover:text-blue-600 transition-colors py-2">Solicite um imóvel</Link>
+                <Link to="/" className="text-gray-700 hover:text-red-600 transition-colors py-2">Início</Link>
+                <Link to="/destaques" className="text-gray-700 hover:text-red-600 transition-colors py-2">Destaques</Link>
+                <Link to="/lancamentos" className="text-gray-700 hover:text-red-600 transition-colors py-2">Lançamentos</Link>
+                <Link to="/busca-detalhada" className="text-gray-700 hover:text-red-600 transition-colors py-2">Busca Detalhada</Link>
+                <Link to="/anunciar" className="text-red-600 hover:text-red-700 transition-colors py-2 font-semibold">Anunciar</Link>
+                <Link to="/solicitar" className="text-gray-700 hover:text-red-600 transition-colors py-2">Solicite um imóvel</Link>
               </div>
             </nav>
           )}
