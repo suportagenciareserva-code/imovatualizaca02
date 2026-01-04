@@ -36,13 +36,13 @@ const Footer = () => {
             <div>
               <h4 className="text-white font-semibold mb-3">Acompanhe o ImovLocal</h4>
               <div className="flex gap-4">
-                <a href="#" className="hover:text-blue-400 transition-colors">
+                <a href="#" className="hover:text-red-400 transition-colors">
                   <Facebook size={24} />
                 </a>
-                <a href="#" className="hover:text-blue-400 transition-colors">
+                <a href="#" className="hover:text-red-400 transition-colors">
                   <Instagram size={24} />
                 </a>
-                <a href="#" className="hover:text-blue-400 transition-colors">
+                <a href="#" className="hover:text-red-400 transition-colors">
                   <Mail size={24} />
                 </a>
               </div>
