@@ -63,6 +63,11 @@ const Home = () => {
       <Header />
       <SearchBar />
 
+      {/* Banner Topo */}
+      <div className="container mx-auto px-4 py-4">
+        <BannerDisplay position="home_topo" className="mb-4" />
+      </div>
+
       {/* Main Content Area */}
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -86,6 +91,9 @@ const Home = () => {
                 ))}
               </div>
             </section>
+
+            {/* Banner Meio */}
+            <BannerDisplay position="home_meio" className="mb-12" />
 
             {/* Launches */}
             <section className="mb-12">
