@@ -131,6 +131,14 @@ const Register = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/assets/images/logo/logo-principal.png" 
+                alt="ImovLocal - Portal Imobiliário"
+                className="h-20 w-auto"
+                data-testid="logo-register"
+              />
+            </div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2 text-center">Cadastre-se</h1>
             <p className="text-gray-600 mb-8 text-center">Crie sua conta no ImovLocal</p>
 
