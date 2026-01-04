@@ -277,4 +277,88 @@ export const notificationsAPI = {
   },
 };
 
+// Banners API - Sistema de Banners Publicitários
+export const bannersAPI = {
+  // Obter banners ativos para exibição (público)
+  getActiveBanners: async (position = null) => {
+    const params = position ? `?position=${position}` : '';
+    const response = await api.get(`/banners/active${params}`);
+    return response.data;
+  },
+
+  // Registrar visualização de banner
+  registerView: async (bannerId) => {
+    try {
+      await api.post(`/banners/${bannerId}/view`);
+    } catch (error) {
+      console.error('Error registering banner view:', error);
+    }
+  },
+
+  // Registrar clique em banner
+  registerClick: async (bannerId) => {
+    try {
+      await api.post(`/banners/${bannerId}/click`);
+    } catch (error) {
+      console.error('Error registering banner click:', error);
+    }
+  },
+
+  // Admin: Listar todos os banners
+  getAllBanners: async (position = null) => {
+    const params = position ? `?position=${position}` : '';
+    const response = await api.get(`/banners/admin/all${params}`);
+    return response.data;
+  },
+
+  // Admin: Criar banner
+  createBanner: async (bannerData, imageFile) => {
+    const formData = new FormData();
+    formData.append('title', bannerData.title);
+    formData.append('link_url', bannerData.link_url);
+    formData.append('position', bannerData.position);
+    formData.append('order', bannerData.order || 0);
+    formData.append('status', bannerData.status || 'active');
+    formData.append('image', imageFile);
+
+    const response = await api.post('/banners/admin/create', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  // Admin: Atualizar banner
+  updateBanner: async (bannerId, bannerData, imageFile = null) => {
+    const formData = new FormData();
+    
+    if (bannerData.title) formData.append('title', bannerData.title);
+    if (bannerData.link_url) formData.append('link_url', bannerData.link_url);
+    if (bannerData.position) formData.append('position', bannerData.position);
+    if (bannerData.order !== undefined) formData.append('order', bannerData.order);
+    if (bannerData.status) formData.append('status', bannerData.status);
+    if (imageFile) formData.append('image', imageFile);
+
+    const response = await api.put(`/banners/admin/${bannerId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  // Admin: Deletar banner
+  deleteBanner: async (bannerId) => {
+    const response = await api.delete(`/banners/admin/${bannerId}`);
+    return response.data;
+  },
+
+  // Admin: Obter estatísticas de banner
+  getBannerStats: async (bannerId) => {
+    const response = await api.get(`/banners/admin/${bannerId}/stats`);
+    return response.data;
+  },
+};
+
 export default api;
