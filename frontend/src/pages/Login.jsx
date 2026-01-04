@@ -86,9 +86,10 @@ const Login = () => {
             <div className="text-center mb-8">
               <div className="flex justify-center mb-6">
                 <img 
-                  src="/assets/images/logo/logo-completa.png" 
+                  src="/assets/images/logo/logo-principal.png" 
                   alt="ImovLocal - Portal Imobiliário"
-                  className="h-20 w-auto"
+                  className="h-20 w-auto md:h-24"
+                  data-testid="logo-login"
                 />
               </div>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">Acesse sua Conta</h1>
