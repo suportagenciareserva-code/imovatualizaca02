@@ -64,7 +64,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-400">
-          <p>© 2025 IMOVLOCAL - Sua Referência em Imóveis - Todos os direitos reservados</p>
+          <p>© 2025 IMOVLOCAL - Seu imóvel aqui - Todos os direitos reservados</p>
         </div>
       </div>
     </footer>
