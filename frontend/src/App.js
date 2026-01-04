@@ -98,6 +98,11 @@ function App() {
                 <AdminGerenciarImoveis />
               </ProtectedRoute>
             } />
+            <Route path="/admin/master/banners" element={
+              <ProtectedRoute>
+                <AdminGerenciarBanners />
+              </ProtectedRoute>
+            } />
           </Routes>
           <Toaster />
         </BrowserRouter>
