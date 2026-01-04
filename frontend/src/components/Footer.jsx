@@ -57,7 +57,7 @@ const Footer = () => {
                   data-testid="logo-footer"
                 />
               </div>
-              <p className="text-sm text-gray-400 mt-2">Sua Referência em Imóveis</p>
+              <p className="text-sm text-gray-400 mt-2">Seu imóvel aqui</p>
             </div>
           </div>
         </div>
