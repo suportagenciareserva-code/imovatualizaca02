@@ -51,9 +51,10 @@ const Footer = () => {
             <div className="text-center md:text-right">
               <div className="flex items-center justify-center md:justify-end">
                 <img 
-                  src="/assets/images/logo/logo-texto.png" 
-                  alt="ImovLocal - Portal Imobiliário"
-                  className="h-10 w-auto opacity-90"
+                  src="/assets/images/logo/icone-footer.png" 
+                  alt="ImovLocal"
+                  className="h-16 w-16 hover:scale-110 transition-transform duration-300"
+                  data-testid="logo-footer"
                 />
               </div>
               <p className="text-sm text-gray-400 mt-2">Sua Referência em Imóveis</p>
