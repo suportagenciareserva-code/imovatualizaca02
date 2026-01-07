@@ -26,6 +26,8 @@ class ProfileUpdate(BaseModel):
     state: Optional[str] = None
     creci: Optional[str] = None
     company: Optional[str] = None
+    cnpj: Optional[str] = None
+    razao_social: Optional[str] = None
     bio: Optional[str] = None  # Descrição do profissional (máx 750 caracteres)
 
 class PasswordChange(BaseModel):
