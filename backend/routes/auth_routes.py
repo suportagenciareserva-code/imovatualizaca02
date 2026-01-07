@@ -62,15 +62,21 @@ async def register(user: UserCreate):
                 detail="CRECI é obrigatório para Corretores"
             )
     
-    # Validação específica para Imobiliária (campos opcionais agora)
-    # Se informar CNPJ, verificar se já existe
-    if user.user_type == "imobiliaria" and user.cnpj:
-        existing_cnpj = await users_collection.find_one({"cnpj": user.cnpj})
-        if existing_cnpj:
+    # Validação para Imobiliária (CRECI obrigatório)
+    if user.user_type == "imobiliaria":
+        if not user.creci:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="CNPJ already registered"
+                detail="CRECI é obrigatório para Imobiliárias"
             )
+        # Se informar CNPJ, verificar se já existe
+        if user.cnpj:
+            existing_cnpj = await users_collection.find_one({"cnpj": user.cnpj})
+            if existing_cnpj:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="CNPJ already registered"
+                )
     
     # Create user document
     user_dict = user.model_dump(exclude={'password'})
