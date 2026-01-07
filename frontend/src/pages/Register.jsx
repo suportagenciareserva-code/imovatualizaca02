@@ -430,60 +430,61 @@ const Register = () => {
               {/* Imobiliária specific fields */}
               {userType === 'imobiliaria' && (
                 <>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-start gap-2">
+                      <Info className="text-blue-600 mt-0.5" size={20} />
+                      <div className="text-sm text-blue-800">
+                        <p className="font-semibold mb-1">Conta Imobiliária / Corretor Autônomo</p>
+                        <p>Esta categoria é ideal para corretores e imobiliárias. Os campos CNPJ, CRECI e Razão Social são opcionais.</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        CNPJ *
+                        CNPJ (opcional)
                       </label>
                       <input
                         type="text"
                         name="cnpj"
                         value={formData.cnpj}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all ${
-                          errors.cnpj ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                         placeholder="00.000.000/0000-00"
                         data-testid="input-cnpj"
                       />
-                      {errors.cnpj && <p className="text-red-500 text-sm mt-1">{errors.cnpj}</p>}
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        CRECI da Imobiliária *
+                        CRECI (opcional)
                       </label>
                       <input
                         type="text"
                         name="creci"
                         value={formData.creci}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all ${
-                          errors.creci ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="CRECI-J 12345-MS"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                        placeholder="CRECI 12345-MS"
                         data-testid="input-creci-imob"
                       />
-                      {errors.creci && <p className="text-red-500 text-sm mt-1">{errors.creci}</p>}
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Razão Social *
+                      Razão Social / Nome da Empresa (opcional)
                     </label>
                     <input
                       type="text"
                       name="razao_social"
                       value={formData.razao_social}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all ${
-                        errors.razao_social ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                      placeholder="Imobiliária XYZ Ltda"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                      placeholder="Imobiliária XYZ Ltda ou Nome do Corretor"
                       data-testid="input-razao-social"
                     />
-                    {errors.razao_social && <p className="text-red-500 text-sm mt-1">{errors.razao_social}</p>}
                   </div>
 
                   <div>
@@ -496,7 +497,7 @@ const Register = () => {
                       value={formData.company}
                       onChange={handleChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                      placeholder="Nome comercial da imobiliária"
+                      placeholder="Nome comercial"
                       data-testid="input-company-imob"
                     />
                   </div>
