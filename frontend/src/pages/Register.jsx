@@ -106,6 +106,8 @@ const Register = () => {
         user_type: userType,
         creci: formData.creci || null,
         company: formData.company || null,
+        cnpj: formData.cnpj || null,
+        razao_social: formData.razao_social || null,
         password: formData.password
       });
 
