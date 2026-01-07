@@ -74,8 +74,9 @@ const Register = () => {
       if (!formData.creci.trim()) newErrors.creci = 'CRECI é obrigatório';
     }
 
-    // Imobiliária não tem campos obrigatórios além dos básicos
-    // Corretores podem se cadastrar como Imobiliária sem CNPJ/CRECI
+    if (userType === 'imobiliaria') {
+      if (!formData.creci.trim()) newErrors.creci = 'CRECI é obrigatório';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
