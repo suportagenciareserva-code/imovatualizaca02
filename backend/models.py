@@ -53,8 +53,10 @@ class UserBase(BaseModel):
     city: str
     state: str
     user_type: UserType
-    creci: Optional[str] = None
-    company: Optional[str] = None
+    creci: Optional[str] = None        # CRECI para Corretor ou Imobiliária
+    company: Optional[str] = None      # Nome da empresa (Corretor ou Imobiliária)
+    cnpj: Optional[str] = None         # CNPJ para Imobiliária
+    razao_social: Optional[str] = None # Razão Social para Imobiliária
     status: Optional[UserStatus] = UserStatus.active
     plan_type: Optional[PlanType] = PlanType.free
     plan_expires_at: Optional[datetime] = None  # None para plano vitalício
