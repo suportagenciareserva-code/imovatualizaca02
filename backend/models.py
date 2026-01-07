@@ -17,9 +17,10 @@ class UserStatus(str, Enum):
     deleted = "deleted"
 
 class PlanType(str, Enum):
-    free = "free"           # Plano gratuito (limitado)
-    monthly = "monthly"     # Plano mensal
-    lifetime = "lifetime"   # Acesso vitalício
+    free = "free"                 # Plano gratuito (limitado)
+    trimestral = "trimestral"     # Plano trimestral (3 meses)
+    anual = "anual"               # Plano anual (12 meses)
+    lifetime = "lifetime"         # Acesso vitalício (legado)
 
 class PropertyPurpose(str, Enum):
     venda = "VENDA"
