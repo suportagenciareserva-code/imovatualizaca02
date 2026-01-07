@@ -146,13 +146,13 @@ const Register = () => {
             <p className="text-gray-600 mb-8 text-center">Crie sua conta no ImovLocal</p>
 
             {/* User Type Selection */}
-            <div className="flex gap-4 mb-6">
+            <div className="grid grid-cols-3 gap-3 mb-6">
               <button
                 type="button"
                 onClick={() => handleUserTypeChange('particular')}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+                className={`py-3 px-4 rounded-lg font-semibold transition-all ${
                   userType === 'particular'
-                    ? 'bg-blue-600 text-white shadow-lg'
+                    ? 'bg-red-600 text-white shadow-lg'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
                 data-testid="btn-particular"
@@ -163,15 +163,28 @@ const Register = () => {
               <button
                 type="button"
                 onClick={() => handleUserTypeChange('corretor')}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+                className={`py-3 px-4 rounded-lg font-semibold transition-all ${
                   userType === 'corretor'
-                    ? 'bg-blue-600 text-white shadow-lg'
+                    ? 'bg-red-600 text-white shadow-lg'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
                 data-testid="btn-corretor"
               >
                 <Building className="inline mr-2" size={20} />
-                Corretor / Imobiliária
+                Corretor
+              </button>
+              <button
+                type="button"
+                onClick={() => handleUserTypeChange('imobiliaria')}
+                className={`py-3 px-4 rounded-lg font-semibold transition-all ${
+                  userType === 'imobiliaria'
+                    ? 'bg-red-600 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                data-testid="btn-imobiliaria"
+              >
+                <Building className="inline mr-2" size={20} />
+                Imobiliária
               </button>
             </div>
 
