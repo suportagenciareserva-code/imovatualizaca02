@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
-  const [userType, setUserType] = useState('particular'); // 'particular' or 'corretor'
+  const [userType, setUserType] = useState('particular'); // 'particular', 'corretor' ou 'imobiliaria'
   const [showParticularWarning, setShowParticularWarning] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
@@ -23,7 +23,10 @@ const Register = () => {
     state: 'MS',
     // Corretor specific
     creci: '',
-    company: ''
+    company: '',
+    // Imobiliária specific
+    cnpj: '',
+    razao_social: ''
   });
   const [errors, setErrors] = useState({});
 
