@@ -37,7 +37,7 @@ async def create_imobiliaria_vitalicia():
         "city": "Campo Grande",
         "state": "MS",
         "user_type": "imobiliaria",
-        "creci": "CRECI-J 99999-MS",
+        "creci": "CRECI 99999-MS",
         "company": "ImovLocal Imobiliária Premium",
         "cnpj": "12.345.678/0001-90",
         "razao_social": "ImovLocal Negócios Imobiliários Ltda",
