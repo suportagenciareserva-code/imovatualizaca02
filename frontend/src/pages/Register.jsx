@@ -392,10 +392,10 @@ const Register = () => {
                         name="creci"
                         value={formData.creci}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all ${
                           errors.creci ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="CRECI 12345"
+                        placeholder="CRECI 12345-MS"
                         data-testid="input-creci"
                       />
                       {errors.creci && <p className="text-red-500 text-sm mt-1">{errors.creci}</p>}
@@ -410,11 +410,87 @@ const Register = () => {
                         name="company"
                         value={formData.company}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                         placeholder="Nome da imobiliária"
                         data-testid="input-company"
                       />
                     </div>
+                  </div>
+                </>
+              )}
+
+              {/* Imobiliária specific fields */}
+              {userType === 'imobiliaria' && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        CNPJ *
+                      </label>
+                      <input
+                        type="text"
+                        name="cnpj"
+                        value={formData.cnpj}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all ${
+                          errors.cnpj ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="00.000.000/0000-00"
+                        data-testid="input-cnpj"
+                      />
+                      {errors.cnpj && <p className="text-red-500 text-sm mt-1">{errors.cnpj}</p>}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        CRECI da Imobiliária *
+                      </label>
+                      <input
+                        type="text"
+                        name="creci"
+                        value={formData.creci}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all ${
+                          errors.creci ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="CRECI-J 12345-MS"
+                        data-testid="input-creci-imob"
+                      />
+                      {errors.creci && <p className="text-red-500 text-sm mt-1">{errors.creci}</p>}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Razão Social *
+                    </label>
+                    <input
+                      type="text"
+                      name="razao_social"
+                      value={formData.razao_social}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all ${
+                        errors.razao_social ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                      placeholder="Imobiliária XYZ Ltda"
+                      data-testid="input-razao-social"
+                    />
+                    {errors.razao_social && <p className="text-red-500 text-sm mt-1">{errors.razao_social}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nome Fantasia (opcional)
+                    </label>
+                    <input
+                      type="text"
+                      name="company"
+                      value={formData.company}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                      placeholder="Nome comercial da imobiliária"
+                      data-testid="input-company-imob"
+                    />
                   </div>
                 </>
               )}
