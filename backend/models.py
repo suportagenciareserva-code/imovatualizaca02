@@ -5,8 +5,9 @@ from enum import Enum
 
 # Enums
 class UserType(str, Enum):
-    particular = "particular"  # Só pode anunciar Aluguel e Aluguel por Temporada
-    corretor = "corretor"      # Pode anunciar todos os tipos (Venda, Aluguel, etc.)
+    particular = "particular"    # Só pode anunciar Aluguel e Aluguel por Temporada
+    corretor = "corretor"        # Pode anunciar todos os tipos (Venda, Aluguel, etc.)
+    imobiliaria = "imobiliaria"  # Imobiliária com CRECI, múltiplos anúncios
     admin = "admin"
 
 class UserStatus(str, Enum):
