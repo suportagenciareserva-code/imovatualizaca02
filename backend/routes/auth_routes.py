@@ -52,6 +52,39 @@ async def register(user: UserCreate):
             detail="CPF already registered"
         )
     
+    # Validação específica para Imobiliária
+    if user.user_type == "imobiliaria":
+        if not user.cnpj:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CNPJ é obrigatório para Imobiliárias"
+            )
+        if not user.razao_social:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Razão Social é obrigatória para Imobiliárias"
+            )
+        if not user.creci:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CRECI é obrigatório para Imobiliárias"
+            )
+        # Check if CNPJ already exists
+        existing_cnpj = await users_collection.find_one({"cnpj": user.cnpj})
+        if existing_cnpj:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CNPJ already registered"
+            )
+    
+    # Validação para Corretor
+    if user.user_type == "corretor":
+        if not user.creci:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CRECI é obrigatório para Corretores"
+            )
+    
     # Create user document
     user_dict = user.model_dump(exclude={'password'})
     user_dict['id'] = str(uuid.uuid4())
