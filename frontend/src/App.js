@@ -29,6 +29,9 @@ import AdminGerenciarUsuarios from "./pages/admin/AdminGerenciarUsuarios.jsx";
 import AdminGerenciarImoveis from "./pages/admin/AdminGerenciarImoveis.jsx";
 import AdminGerenciarBanners from "./pages/admin/AdminGerenciarBanners.jsx";
 
+// Parcerias Pages
+import ParceriasHub from "./pages/parcerias/ParceriasHub.jsx";
+
 import { Toaster } from "./components/ui/sonner";
 
 function App() {
