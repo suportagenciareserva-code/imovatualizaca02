@@ -31,6 +31,9 @@ import AdminGerenciarBanners from "./pages/admin/AdminGerenciarBanners.jsx";
 
 // Parcerias Pages
 import ParceriasHub from "./pages/parcerias/ParceriasHub.jsx";
+import PublicarDemanda from "./pages/parcerias/PublicarDemanda.jsx";
+import MuralOportunidades from "./pages/parcerias/MuralOportunidades.jsx";
+import MinhasDemandas from "./pages/parcerias/MinhasDemandas.jsx";
 
 import { Toaster } from "./components/ui/sonner";
 
