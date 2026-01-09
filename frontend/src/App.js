@@ -84,6 +84,13 @@ function App() {
                 <Notificacoes />
               </ProtectedRoute>
             } />
+            
+            {/* Parcerias Routes */}
+            <Route path="/admin/parcerias" element={
+              <ProtectedRoute>
+                <ParceriasHub />
+              </ProtectedRoute>
+            } />
 
             {/* Master Admin Routes */}
             <Route path="/admin/master" element={
