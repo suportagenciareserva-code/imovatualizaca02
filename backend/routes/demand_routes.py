@@ -350,7 +350,7 @@ async def create_proposal(
         "demand_id": demand_id,
         "property_id": proposal.property_id,
         "property_title": property_doc["title"],
-        "property_price": property_doc["preco"],
+        "property_price": property_doc["price"],
         "ofertante_id": user["id"],
         "ofertante_name": user["name"],
         "ofertante_phone": user["phone"],
