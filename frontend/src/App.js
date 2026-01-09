@@ -94,6 +94,21 @@ function App() {
                 <ParceriasHub />
               </ProtectedRoute>
             } />
+            <Route path="/admin/parcerias/publicar" element={
+              <ProtectedRoute>
+                <PublicarDemanda />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/parcerias/mural" element={
+              <ProtectedRoute>
+                <MuralOportunidades />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/parcerias/minhas" element={
+              <ProtectedRoute>
+                <MinhasDemandas />
+              </ProtectedRoute>
+            } />
 
             {/* Master Admin Routes */}
             <Route path="/admin/master" element={
