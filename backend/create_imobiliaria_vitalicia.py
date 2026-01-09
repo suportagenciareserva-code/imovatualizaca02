@@ -31,6 +31,7 @@ async def create_imobiliaria_vitalicia():
     
     # Dados do usuário Imobiliária
     user_data = {
+        "id": str(uuid.uuid4()),
         "name": "ImovLocal Imobiliária Teste",
         "email": "imobiliaria.vitalicia@imovlocal.com",
         "phone": "(67) 99999-0003",
