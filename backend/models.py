@@ -286,3 +286,94 @@ class Notification(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ==========================================
+# MURAL DE OPORTUNIDADES - PARCERIAS
+# ==========================================
+
+class DemandStatus(str, Enum):
+    active = "active"           # Demanda ativa no mural
+    in_negotiation = "in_negotiation"  # Em negociação
+    closed = "closed"           # Fechada/Atendida
+    cancelled = "cancelled"     # Cancelada pelo demandante
+
+class DemandCreate(BaseModel):
+    """Dados para criar uma demanda"""
+    tipo_imovel: PropertyType
+    bairros_interesse: List[str] = Field(..., min_items=1, description="Lista de bairros de interesse")
+    valor_minimo: float = Field(..., gt=0, description="Valor mínimo em reais")
+    valor_maximo: float = Field(..., gt=0, description="Valor máximo em reais")
+    comissao_parceiro: int = Field(..., ge=10, le=100, description="Percentual de comissão para o parceiro")
+    dormitorios_min: Optional[int] = Field(None, ge=0)
+    vagas_garagem_min: Optional[int] = Field(None, ge=0)
+    area_util_min: Optional[float] = Field(None, gt=0, description="Área útil mínima em m²")
+    caracteristicas_essenciais: Optional[str] = Field(None, max_length=500, description="Características desejadas")
+
+class DemandUpdate(BaseModel):
+    """Dados para atualizar uma demanda"""
+    bairros_interesse: Optional[List[str]] = None
+    valor_minimo: Optional[float] = None
+    valor_maximo: Optional[float] = None
+    comissao_parceiro: Optional[int] = None
+    dormitorios_min: Optional[int] = None
+    vagas_garagem_min: Optional[int] = None
+    area_util_min: Optional[float] = None
+    caracteristicas_essenciais: Optional[str] = None
+    status: Optional[DemandStatus] = None
+
+class Demand(BaseModel):
+    """Modelo completo de demanda no mural"""
+    id: str
+    corretor_id: str  # ID do corretor que criou a demanda
+    corretor_name: str  # Nome do corretor (para exibição)
+    corretor_phone: str  # Telefone do corretor
+    corretor_creci: Optional[str] = None  # CRECI do corretor
+    tipo_imovel: PropertyType
+    bairros_interesse: List[str]
+    valor_minimo: float
+    valor_maximo: float
+    comissao_parceiro: int
+    dormitorios_min: Optional[int] = None
+    vagas_garagem_min: Optional[int] = None
+    area_util_min: Optional[float] = None
+    caracteristicas_essenciais: Optional[str] = None
+    status: DemandStatus = DemandStatus.active
+    propostas_count: int = 0  # Contador de propostas recebidas
+    views: int = 0  # Contador de visualizações
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class ProposalStatus(str, Enum):
+    pending = "pending"         # Aguardando resposta
+    accepted = "accepted"       # Aceita pelo demandante
+    rejected = "rejected"       # Rejeitada
+    expired = "expired"         # Expirada
+
+class ProposalCreate(BaseModel):
+    """Dados para criar uma proposta"""
+    demand_id: str
+    property_id: str  # ID do imóvel oferecido
+    message: Optional[str] = Field(None, max_length=1000, description="Mensagem para o demandante")
+
+class Proposal(BaseModel):
+    """Modelo completo de proposta"""
+    id: str
+    demand_id: str
+    property_id: str
+    property_title: str  # Título do imóvel (cache)
+    property_price: float  # Preço do imóvel (cache)
+    ofertante_id: str  # ID do corretor que fez a proposta
+    ofertante_name: str  # Nome do corretor ofertante
+    ofertante_phone: str  # Telefone do ofertante
+    ofertante_creci: Optional[str] = None
+    message: Optional[str] = None
+    status: ProposalStatus = ProposalStatus.pending
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
