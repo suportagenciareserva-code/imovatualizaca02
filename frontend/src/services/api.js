@@ -361,4 +361,82 @@ export const bannersAPI = {
   },
 };
 
+// Demands API - Mural de Oportunidades (Parcerias)
+export const demandsAPI = {
+  // Criar nova demanda
+  createDemand: async (demandData) => {
+    const response = await api.post('/demands/', demandData);
+    return response.data;
+  },
+
+  // Listar demandas com filtros
+  listDemands: async (filters = {}) => {
+    const params = new URLSearchParams();
+    if (filters.tipo_imovel) params.append('tipo_imovel', filters.tipo_imovel);
+    if (filters.bairro) params.append('bairro', filters.bairro);
+    if (filters.valor_min) params.append('valor_min', filters.valor_min);
+    if (filters.valor_max) params.append('valor_max', filters.valor_max);
+    if (filters.status) params.append('status', filters.status);
+    if (filters.skip) params.append('skip', filters.skip);
+    if (filters.limit) params.append('limit', filters.limit);
+
+    const response = await api.get(`/demands/?${params.toString()}`);
+    return response.data;
+  },
+
+  // Minhas demandas
+  getMyDemands: async () => {
+    const response = await api.get('/demands/my-demands');
+    return response.data;
+  },
+
+  // Detalhes de uma demanda
+  getDemand: async (demandId) => {
+    const response = await api.get(`/demands/${demandId}`);
+    return response.data;
+  },
+
+  // Atualizar demanda
+  updateDemand: async (demandId, demandData) => {
+    const response = await api.put(`/demands/${demandId}`, demandData);
+    return response.data;
+  },
+
+  // Deletar demanda
+  deleteDemand: async (demandId) => {
+    const response = await api.delete(`/demands/${demandId}`);
+    return response.data;
+  },
+
+  // Criar proposta
+  createProposal: async (demandId, proposalData) => {
+    const response = await api.post(`/demands/${demandId}/proposals`, proposalData);
+    return response.data;
+  },
+
+  // Listar propostas de uma demanda
+  getProposals: async (demandId) => {
+    const response = await api.get(`/demands/${demandId}/proposals`);
+    return response.data;
+  },
+
+  // Aceitar proposta
+  acceptProposal: async (proposalId) => {
+    const response = await api.put(`/demands/proposals/${proposalId}/accept`);
+    return response.data;
+  },
+
+  // Rejeitar proposta
+  rejectProposal: async (proposalId) => {
+    const response = await api.put(`/demands/proposals/${proposalId}/reject`);
+    return response.data;
+  },
+
+  // Estatísticas
+  getStats: async () => {
+    const response = await api.get('/demands/stats/summary');
+    return response.data;
+  },
+};
+
 export default api;
