@@ -264,6 +264,10 @@ class NotificationType(str, Enum):
     visit_cancelled = "visit_cancelled"     # Visita cancelada
     new_message = "new_message"             # Nova mensagem
     system = "system"                       # Notificação do sistema
+    proposal = "proposal"                   # Nova proposta recebida
+    proposal_accepted = "proposal_accepted" # Proposta aceita
+    proposal_rejected = "proposal_rejected" # Proposta rejeitada
+    new_demand = "new_demand"               # Nova demanda no mural (match)
 
 class NotificationCreate(BaseModel):
     """Dados para criar uma notificação"""
