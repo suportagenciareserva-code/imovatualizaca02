@@ -355,7 +355,6 @@ class ProposalStatus(str, Enum):
 
 class ProposalCreate(BaseModel):
     """Dados para criar uma proposta"""
-    demand_id: str
     property_id: str  # ID do imóvel oferecido
     message: Optional[str] = Field(None, max_length=1000, description="Mensagem para o demandante")
 
