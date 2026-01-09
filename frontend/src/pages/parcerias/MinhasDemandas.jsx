@@ -95,7 +95,7 @@ const MyDemandCard = ({ demand, onDelete }) => {
               size="sm"
               variant="outline"
               className="flex-1"
-              onClick={() => toast.info('Ver propostas em desenvolvimento')}
+              onClick={() => navigate(`/admin/parcerias/demanda/${demand.id}/propostas`)}
             >
               <MessageSquare className="mr-1 h-4 w-4" />
               Propostas ({demand.propostas_count || 0})
