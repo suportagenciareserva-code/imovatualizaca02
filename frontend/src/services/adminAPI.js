@@ -37,6 +37,14 @@ export const adminAPIService = {
   },
 
   // User Management
+  getUsers: async (userType = null) => {
+    const params = {};
+    if (userType) params.user_type = userType;
+    
+    const response = await adminAPI.get('/users', { params });
+    return response.data;
+  },
+
   getAllUsers: async (status = null, userType = null) => {
     const params = {};
     if (status) params.status = status;
