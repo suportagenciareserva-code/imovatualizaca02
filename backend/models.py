@@ -308,7 +308,7 @@ class DemandCreate(BaseModel):
     bairros_interesse: List[str] = Field(..., min_items=1, description="Lista de bairros de interesse")
     valor_minimo: float = Field(..., gt=0, description="Valor mínimo em reais")
     valor_maximo: float = Field(..., gt=0, description="Valor máximo em reais")
-    comissao_parceiro: int = Field(..., ge=10, le=100, description="Percentual de comissão para o parceiro")
+    comissao_parceiro: float = Field(..., ge=0.5, le=30, description="Percentual de comissão para o parceiro (0,5% a 30%)")
     dormitorios_min: Optional[int] = Field(None, ge=0)
     vagas_garagem_min: Optional[int] = Field(None, ge=0)
     area_util_min: Optional[float] = Field(None, gt=0, description="Área útil mínima em m²")
@@ -319,7 +319,7 @@ class DemandUpdate(BaseModel):
     bairros_interesse: Optional[List[str]] = None
     valor_minimo: Optional[float] = None
     valor_maximo: Optional[float] = None
-    comissao_parceiro: Optional[int] = None
+    comissao_parceiro: Optional[float] = None
     dormitorios_min: Optional[int] = None
     vagas_garagem_min: Optional[int] = None
     area_util_min: Optional[float] = None
@@ -337,7 +337,7 @@ class Demand(BaseModel):
     bairros_interesse: List[str]
     valor_minimo: float
     valor_maximo: float
-    comissao_parceiro: int
+    comissao_parceiro: float
     dormitorios_min: Optional[int] = None
     vagas_garagem_min: Optional[int] = None
     area_util_min: Optional[float] = None
