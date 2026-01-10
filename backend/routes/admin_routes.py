@@ -39,8 +39,20 @@ class UserCreate(BaseModel):
     company: Optional[str] = None
 
 class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    cpf: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
     status: Optional[str] = None
     user_type: Optional[str] = None
+    creci: Optional[str] = None
+    company: Optional[str] = None
+    cnpj: Optional[str] = None
+    razao_social: Optional[str] = None
+    plan_type: Optional[str] = None
+    bio: Optional[str] = None
 
 class UserResponse(BaseModel):
     id: str
