@@ -127,8 +127,8 @@ const AdminMasterDashboard = () => {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Ações Rápidas - Admin Master</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Ações Rápidas - Admin {user?.user_type === 'admin' ? 'Master' : 'Sênior'}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Link to="/admin/master/users">
               <Button className="w-full bg-blue-600 hover:bg-blue-700">
                 <Users size={18} className="mr-2" />
@@ -145,6 +145,12 @@ const AdminMasterDashboard = () => {
               <Button className="w-full bg-purple-600 hover:bg-purple-700">
                 <Image size={18} className="mr-2" />
                 Gerenciar Banners
+              </Button>
+            </Link>
+            <Link to="/admin/master/mural">
+              <Button className="w-full bg-orange-600 hover:bg-orange-700">
+                <Target size={18} className="mr-2" />
+                Mural de Oportunidades
               </Button>
             </Link>
           </div>
