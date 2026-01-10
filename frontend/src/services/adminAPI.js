@@ -81,6 +81,19 @@ export const adminAPIService = {
     const response = await adminAPI.delete(`/properties/${propertyId}`);
     return response.data;
   },
+
+  // Mural de Oportunidades
+  getMuralStats: async () => {
+    const response = await adminAPI.get('/mural-oportunidades/stats');
+    return response.data;
+  },
+
+  getMuralDemands: async (status = null, limit = 100, skip = 0) => {
+    const params = { limit, skip };
+    if (status) params.status = status;
+    const response = await adminAPI.get('/mural-oportunidades/demands', { params });
+    return response.data;
+  },
 };
 
 export default adminAPIService;
