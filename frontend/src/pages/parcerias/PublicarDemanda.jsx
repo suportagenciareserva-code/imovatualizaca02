@@ -55,7 +55,8 @@ const PublicarDemanda = () => {
     { value: 'Imóvel Comercial', label: 'Imóvel Comercial' },
     { value: 'Sala / Salão / Loja', label: 'Sala / Salão / Loja' },
     { value: 'Galpão / Depósito', label: 'Galpão / Depósito' },
-    { value: 'Sítio / Fazenda / Chácara', label: 'Sítio / Fazenda / Chácara' }
+    { value: 'Sítio / Fazenda / Chácara', label: 'Sítio / Fazenda / Chácara' },
+    { value: 'Espaço para Eventos', label: 'Espaço para Eventos' }
   ];
 
   const handleAddBairro = () => {
