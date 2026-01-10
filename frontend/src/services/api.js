@@ -217,6 +217,24 @@ export const propertiesAPI = {
     const response = await api.get('/properties/user/my-properties');
     return response.data;
   },
+
+  // Toggle Featured (Destaque)
+  toggleFeatured: async (id) => {
+    const response = await api.put(`/properties/${id}/toggle-featured`);
+    return response.data;
+  },
+
+  // Toggle Exclusive (Lançamento Exclusivo)
+  toggleExclusive: async (id) => {
+    const response = await api.put(`/properties/${id}/toggle-exclusive`);
+    return response.data;
+  },
+
+  // Get Featured Count
+  getFeaturedCount: async () => {
+    const response = await api.get('/properties/user/featured-count');
+    return response.data;
+  },
 };
 
 // Visits API - Agendamento de Visitas
