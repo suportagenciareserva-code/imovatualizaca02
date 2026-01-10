@@ -18,8 +18,8 @@ const AdminMasterDashboard = () => {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    // Verificar se é admin
-    if (user?.user_type !== 'admin') {
+    // Verificar se é admin ou admin_senior
+    if (user?.user_type !== 'admin' && user?.user_type !== 'admin_senior') {
       toast.error('Acesso negado. Apenas administradores.');
       navigate('/');
       return;
