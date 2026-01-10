@@ -80,7 +80,7 @@ const MyDemandCard = ({ demand, onDelete }) => {
 
           <div className="flex items-center gap-2 text-sm">
             <span className="font-semibold text-green-600">
-              {demand.comissao_parceiro}% de comissão
+              {String(demand.comissao_parceiro).replace('.', ',')}% de comissão
             </span>
           </div>
 
