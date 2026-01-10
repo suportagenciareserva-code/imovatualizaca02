@@ -500,3 +500,158 @@ async def get_my_properties(
     properties = await cursor.to_list(length=limit)
     
     return [Property(**{k: v for k, v in prop.items() if k != '_id'}) for prop in properties]
+
+
+
+# ==========================================
+# DESTAQUE E EXCLUSIVO
+# ==========================================
+
+MAX_FEATURED_PER_USER = 10  # Limite de destaques por corretor
+
+@router.put("/{property_id}/toggle-featured", response_model=Property)
+async def toggle_featured(
+    property_id: str,
+    email: str = Depends(get_current_user_email)
+):
+    """
+    Marcar/Desmarcar imóvel como destaque.
+    Limite de 10 destaques por corretor/imobiliária.
+    """
+    # Get property
+    property_data = await properties_collection.find_one({"id": property_id})
+    if not property_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Imóvel não encontrado"
+        )
+    
+    # Get user
+    user = await users_collection.find_one({"email": email})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuário não encontrado"
+        )
+    
+    # Check ownership
+    if property_data['owner_id'] != user['id']:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não tem permissão para alterar este imóvel"
+        )
+    
+    # Check user type - only corretor and imobiliaria can feature
+    if user['user_type'] not in ['corretor', 'imobiliaria']:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Apenas corretores e imobiliárias podem destacar imóveis"
+        )
+    
+    current_featured = property_data.get('is_featured', False)
+    
+    # If trying to feature, check limit
+    if not current_featured:
+        featured_count = await properties_collection.count_documents({
+            "owner_id": user['id'],
+            "is_featured": True
+        })
+        
+        if featured_count >= MAX_FEATURED_PER_USER:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Você já atingiu o limite de {MAX_FEATURED_PER_USER} imóveis em destaque"
+            )
+    
+    # Toggle featured
+    new_featured = not current_featured
+    await properties_collection.update_one(
+        {"id": property_id},
+        {
+            "$set": {
+                "is_featured": new_featured,
+                "updated_at": datetime.utcnow()
+            }
+        }
+    )
+    
+    # Get updated property
+    updated_property = await properties_collection.find_one({"id": property_id})
+    return Property(**{k: v for k, v in updated_property.items() if k != '_id'})
+
+
+@router.put("/{property_id}/toggle-exclusive", response_model=Property)
+async def toggle_exclusive(
+    property_id: str,
+    email: str = Depends(get_current_user_email)
+):
+    """
+    Marcar/Desmarcar imóvel como Lançamento Exclusivo.
+    Apenas imobiliárias podem usar esta funcionalidade.
+    """
+    # Get property
+    property_data = await properties_collection.find_one({"id": property_id})
+    if not property_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Imóvel não encontrado"
+        )
+    
+    # Get user
+    user = await users_collection.find_one({"email": email})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuário não encontrado"
+        )
+    
+    # Check ownership
+    if property_data['owner_id'] != user['id']:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não tem permissão para alterar este imóvel"
+        )
+    
+    # Check user type - only imobiliaria can set exclusive
+    if user['user_type'] != 'imobiliaria':
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Apenas imobiliárias podem marcar imóveis como Lançamento Exclusivo"
+        )
+    
+    # Toggle exclusive
+    current_exclusive = property_data.get('is_exclusive', False)
+    new_exclusive = not current_exclusive
+    
+    await properties_collection.update_one(
+        {"id": property_id},
+        {
+            "$set": {
+                "is_exclusive": new_exclusive,
+                "updated_at": datetime.utcnow()
+            }
+        }
+    )
+    
+    # Get updated property
+    updated_property = await properties_collection.find_one({"id": property_id})
+    return Property(**{k: v for k, v in updated_property.items() if k != '_id'})
+
+
+@router.get("/user/featured-count")
+async def get_featured_count(email: str = Depends(get_current_user_email)):
+    """Retorna quantos imóveis em destaque o usuário tem"""
+    user = await users_collection.find_one({"email": email})
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    count = await properties_collection.count_documents({
+        "owner_id": user['id'],
+        "is_featured": True
+    })
+    
+    return {
+        "featured_count": count,
+        "max_featured": MAX_FEATURED_PER_USER,
+        "remaining": MAX_FEATURED_PER_USER - count
+    }
