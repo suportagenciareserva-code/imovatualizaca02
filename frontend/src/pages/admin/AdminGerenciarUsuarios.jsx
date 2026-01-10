@@ -71,7 +71,8 @@ const AdminGerenciarUsuarios = () => {
     city: '',
     state: 'MS',
     cpf: '',
-    creci: ''
+    creci: '',
+    plan_type: 'free'
   });
 
   useEffect(() => {
