@@ -226,22 +226,25 @@ const PublicarDemanda = () => {
 
               {/* Comissão */}
               <div>
-                <Label htmlFor="comissao_parceiro">Comissão para o Parceiro * ({formData.comissao_parceiro}%)</Label>
-                <Input
-                  id="comissao_parceiro"
-                  type="range"
-                  min="10"
-                  max="100"
-                  step="5"
+                <Label htmlFor="comissao_parceiro">Comissão para o Parceiro *</Label>
+                <Select
                   value={formData.comissao_parceiro}
-                  onChange={(e) => setFormData({ ...formData, comissao_parceiro: e.target.value })}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>10%</span>
-                  <span>50%</span>
-                  <span>100%</span>
-                </div>
+                  onValueChange={(value) => setFormData({ ...formData, comissao_parceiro: value })}
+                >
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Selecione a comissão" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    {comissaoOptions.map((valor) => (
+                      <SelectItem key={valor} value={valor}>
+                        {valor.replace('.', ',')}%
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-gray-500 mt-1">
+                  Percentual da comissão que será dividido com o corretor parceiro
+                </p>
               </div>
 
               {/* Campos Opcionais */}
