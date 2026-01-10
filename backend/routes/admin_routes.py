@@ -448,3 +448,151 @@ async def delete_service_admin(
         )
     
     return {"message": "Service provider deleted successfully", "service_id": service_id}
+
+
+
+# ==========================================
+# MURAL DE OPORTUNIDADES - Admin Stats
+# ==========================================
+
+@router.get("/mural-oportunidades/stats")
+async def get_mural_stats(admin = Depends(get_current_admin)):
+    """
+    Estatísticas do Mural de Oportunidades para Admin
+    Mostra dados sobre demandas e parcerias realizadas
+    """
+    
+    # Total de demandas
+    total_demands = await db.demands.count_documents({})
+    active_demands = await db.demands.count_documents({"status": "active"})
+    negotiating_demands = await db.demands.count_documents({"status": "negotiating"})
+    closed_demands = await db.demands.count_documents({"status": "closed"})
+    
+    # Total de propostas
+    total_proposals = await db.proposals.count_documents({})
+    pending_proposals = await db.proposals.count_documents({"status": "pending"})
+    accepted_proposals = await db.proposals.count_documents({"status": "accepted"})
+    rejected_proposals = await db.proposals.count_documents({"status": "rejected"})
+    
+    # Demandas por tipo de imóvel
+    demands_by_type = await db.demands.aggregate([
+        {"$group": {"_id": "$tipo_imovel", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]).to_list(20)
+    
+    # Taxa de conversão (propostas aceitas / total de propostas)
+    conversion_rate = (accepted_proposals / total_proposals * 100) if total_proposals > 0 else 0
+    
+    # Top corretores com mais demandas
+    top_demandantes = await db.demands.aggregate([
+        {"$group": {"_id": "$corretor_id", "name": {"$first": "$corretor_name"}, "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]).to_list(10)
+    
+    # Top corretores com mais propostas aceitas
+    top_ofertantes = await db.proposals.aggregate([
+        {"$match": {"status": "accepted"}},
+        {"$group": {"_id": "$ofertante_id", "name": {"$first": "$ofertante_name"}, "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]).to_list(10)
+    
+    # Demandas recentes (últimos 7 dias)
+    from datetime import timedelta
+    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    recent_demands = await db.demands.count_documents({"created_at": {"$gte": seven_days_ago}})
+    
+    # Todas as demandas com detalhes
+    all_demands = await db.demands.aggregate([
+        {"$sort": {"created_at": -1}},
+        {"$limit": 50},
+        {
+            "$lookup": {
+                "from": "proposals",
+                "localField": "id",
+                "foreignField": "demand_id",
+                "as": "proposals"
+            }
+        },
+        {
+            "$addFields": {
+                "proposals_count": {"$size": "$proposals"},
+                "accepted_count": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$proposals",
+                            "as": "p",
+                            "cond": {"$eq": ["$$p.status", "accepted"]}
+                        }
+                    }
+                }
+            }
+        },
+        {"$project": {"proposals": 0, "_id": 0}}
+    ]).to_list(50)
+    
+    return {
+        "summary": {
+            "total_demands": total_demands,
+            "active_demands": active_demands,
+            "negotiating_demands": negotiating_demands,
+            "closed_demands": closed_demands,
+            "total_proposals": total_proposals,
+            "pending_proposals": pending_proposals,
+            "accepted_proposals": accepted_proposals,
+            "rejected_proposals": rejected_proposals,
+            "conversion_rate": round(conversion_rate, 2),
+            "recent_demands_7d": recent_demands
+        },
+        "demands_by_type": {d["_id"]: d["count"] for d in demands_by_type},
+        "top_demandantes": top_demandantes,
+        "top_ofertantes": top_ofertantes,
+        "recent_demands": all_demands
+    }
+
+
+@router.get("/mural-oportunidades/demands")
+async def get_all_demands_admin(
+    status: str = None,
+    limit: int = 100,
+    skip: int = 0,
+    admin = Depends(get_current_admin)
+):
+    """Lista todas as demandas do mural (Admin only)"""
+    
+    query = {}
+    if status:
+        query["status"] = status
+    
+    demands = await db.demands.aggregate([
+        {"$match": query},
+        {"$sort": {"created_at": -1}},
+        {"$skip": skip},
+        {"$limit": limit},
+        {
+            "$lookup": {
+                "from": "proposals",
+                "localField": "id",
+                "foreignField": "demand_id",
+                "as": "proposals_list"
+            }
+        },
+        {
+            "$addFields": {
+                "total_proposals": {"$size": "$proposals_list"},
+                "accepted_proposals": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$proposals_list",
+                            "as": "p",
+                            "cond": {"$eq": ["$$p.status", "accepted"]}
+                        }
+                    }
+                }
+            }
+        },
+        {"$project": {"proposals_list": 0, "_id": 0}}
+    ]).to_list(limit)
+    
+    return demands
