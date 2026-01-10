@@ -22,12 +22,20 @@ const PublicarDemanda = () => {
     bairros_interesse: [],
     valor_minimo: '',
     valor_maximo: '',
-    comissao_parceiro: 50,
+    comissao_parceiro: '5',
     dormitorios_min: '',
     vagas_garagem_min: '',
     area_util_min: '',
     caracteristicas_essenciais: ''
   });
+
+  // Opções de comissão de 0,5% até 30% com valores quebrados
+  const comissaoOptions = [
+    '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5',
+    '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10',
+    '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
+    '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'
+  ];
 
   const [bairroInput, setBairroInput] = useState('');
 
