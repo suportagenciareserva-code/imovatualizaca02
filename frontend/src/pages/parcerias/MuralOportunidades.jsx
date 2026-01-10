@@ -46,7 +46,7 @@ const DemandCard = ({ demand, onClick }) => {
             </CardDescription>
           </div>
           <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-            {demand.comissao_parceiro}% comissão
+            {String(demand.comissao_parceiro).replace('.', ',')}% comissão
           </Badge>
         </div>
       </CardHeader>
