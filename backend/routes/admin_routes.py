@@ -143,10 +143,11 @@ async def create_user(user_data: UserCreate, admin = Depends(get_current_admin))
         )
     
     # Validate user_type
-    if user_data.user_type not in ['particular', 'corretor']:
+    valid_types = ['particular', 'corretor', 'imobiliaria', 'admin_senior']
+    if user_data.user_type not in valid_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Tipo de usuário inválido. Use 'particular' ou 'corretor'"
+            detail=f"Tipo de usuário inválido. Use: {', '.join(valid_types)}"
         )
     
     # Create user document
