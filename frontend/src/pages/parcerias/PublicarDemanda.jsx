@@ -41,11 +41,21 @@ const PublicarDemanda = () => {
 
   const tiposImovel = [
     { value: 'Apartamento', label: 'Apartamento' },
-    { value: 'Casa', label: 'Casa' },
-    { value: 'Terreno', label: 'Terreno' },
-    { value: 'Comercial', label: 'Comercial' },
+    { value: 'Casa-Térrea', label: 'Casa Térrea' },
+    { value: 'Casa-Térrea-Condomínio', label: 'Casa Térrea em Condomínio' },
+    { value: 'Casa de Vila', label: 'Casa de Vila' },
+    { value: 'Sobrado', label: 'Sobrado' },
+    { value: 'Sobrado-Condomínio', label: 'Sobrado em Condomínio' },
     { value: 'Kitnet', label: 'Kitnet' },
-    { value: 'Sobrado', label: 'Sobrado' }
+    { value: 'Studio', label: 'Studio' },
+    { value: 'Apart Hotel / Flat / Loft', label: 'Apart Hotel / Flat / Loft' },
+    { value: 'Apto. Cobertura / Duplex', label: 'Cobertura / Duplex' },
+    { value: 'Terreno', label: 'Terreno' },
+    { value: 'Terreno-Condomínio', label: 'Terreno em Condomínio' },
+    { value: 'Imóvel Comercial', label: 'Imóvel Comercial' },
+    { value: 'Sala / Salão / Loja', label: 'Sala / Salão / Loja' },
+    { value: 'Galpão / Depósito', label: 'Galpão / Depósito' },
+    { value: 'Sítio / Fazenda / Chácara', label: 'Sítio / Fazenda / Chácara' }
   ];
 
   const handleAddBairro = () => {
