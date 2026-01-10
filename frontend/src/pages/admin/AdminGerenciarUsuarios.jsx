@@ -4,7 +4,20 @@ import { useAuth } from '../../context/AuthContext';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { Button } from '../../components/ui/button';
-import { ArrowLeft, UserCheck, UserX, Pause, Trash2, Filter, UserPlus, X, RefreshCw } from 'lucide-react';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { 
+  ArrowLeft, UserCheck, UserX, Pause, Trash2, Filter, UserPlus, X, RefreshCw, 
+  Edit, Save, Eye, Phone, Mail, MapPin, Building2, CreditCard
+} from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '../../components/ui/dialog';
 import { adminAPIService } from '../../services/adminAPI';
 import { toast } from 'sonner';
 
@@ -41,123 +54,163 @@ const states = [
 const AdminGerenciarUsuarios = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
-  const [filter, setFilter] = useState({ status: '', userType: '' });
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
-  const [lastUpdated, setLastUpdated] = useState(null);
-  const [newUser, setNewUser] = useState({
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [editFormData, setEditFormData] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [newUserData, setNewUserData] = useState({
     name: '',
     email: '',
     password: '',
     phone: '',
-    cpf: '',
+    user_type: 'particular',
     city: '',
     state: 'MS',
-    user_type: 'particular',
-    creci: '',
-    company: ''
+    cpf: '',
+    creci: ''
   });
 
-  // Auto-refresh every 30 seconds
   useEffect(() => {
-    if (user?.user_type !== 'admin') {
+    if (user?.user_type !== 'admin' && user?.user_type !== 'admin_senior') {
+      toast.error('Acesso negado');
       navigate('/');
       return;
     }
-    
     fetchUsers();
-    
-    // Set up auto-refresh
-    const interval = setInterval(() => {
-      fetchUsers(true); // Silent refresh
-    }, 30000);
-    
+    const interval = setInterval(fetchUsers, 30000);
     return () => clearInterval(interval);
   }, [filter, user, navigate]);
 
-  const fetchUsers = useCallback(async (silent = false) => {
+  const fetchUsers = useCallback(async () => {
     try {
-      if (!silent) setLoading(true);
-      const data = await adminAPIService.getAllUsers(filter.status || null, filter.userType || null);
+      const data = await adminAPIService.getUsers(filter || undefined);
       setUsers(data);
-      setLastUpdated(new Date());
     } catch (error) {
       console.error('Error fetching users:', error);
-      if (!silent) toast.error('Erro ao carregar usuários');
+      toast.error('Erro ao carregar usuários');
     } finally {
-      if (!silent) setLoading(false);
+      setLoading(false);
     }
   }, [filter]);
 
   const handleStatusChange = async (userId, newStatus) => {
-    const statusText = newStatus === 'active' ? 'ativar' : newStatus === 'paused' ? 'pausar' : 'marcar como pendente';
-    if (!window.confirm(`Tem certeza que deseja ${statusText} este usuário?`)) {
-      return;
-    }
-
     try {
-      await adminAPIService.updateUserStatus(userId, newStatus);
-      toast.success('Status do usuário atualizado!');
+      await adminAPIService.updateUser(userId, { status: newStatus });
+      toast.success(`Status alterado para ${newStatus}`);
       fetchUsers();
     } catch (error) {
-      console.error('Error updating user:', error);
-      toast.error('Erro ao atualizar usuário');
+      console.error('Error updating status:', error);
+      toast.error(error.response?.data?.detail || 'Erro ao atualizar status');
     }
   };
 
   const confirmDeleteUser = (userId, userName) => {
-    setUserToDelete({ id: userId, name: userName });
-    setShowDeleteModal(true);
+    if (window.confirm(`Tem certeza que deseja EXCLUIR o usuário "${userName}"? Esta ação não pode ser desfeita.`)) {
+      deleteUser(userId);
+    }
   };
 
-  const handleDeleteUser = async () => {
-    if (!userToDelete) return;
-
+  const deleteUser = async (userId) => {
     try {
-      await adminAPIService.deleteUser(userToDelete.id);
-      toast.success('Usuário excluído com sucesso!');
-      setShowDeleteModal(false);
-      setUserToDelete(null);
+      await adminAPIService.deleteUser(userId);
+      toast.success('Usuário excluído');
       fetchUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
-      toast.error('Erro ao excluir usuário');
+      toast.error(error.response?.data?.detail || 'Erro ao excluir usuário');
     }
   };
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
-    
-    // Validation
-    if (!newUser.name || !newUser.email || !newUser.password || !newUser.phone || !newUser.cpf) {
-      toast.error('Preencha todos os campos obrigatórios');
-      return;
-    }
-
+    setSaving(true);
     try {
-      await adminAPIService.createUser(newUser);
+      await adminAPIService.createUser(newUserData);
       toast.success('Usuário criado com sucesso!');
       setShowAddModal(false);
-      setNewUser({
+      setNewUserData({
         name: '',
         email: '',
         password: '',
         phone: '',
-        cpf: '',
+        user_type: 'particular',
         city: '',
         state: 'MS',
-        user_type: 'particular',
-        creci: '',
-        company: ''
+        cpf: '',
+        creci: ''
       });
       fetchUsers();
     } catch (error) {
       console.error('Error creating user:', error);
       toast.error(error.response?.data?.detail || 'Erro ao criar usuário');
+    } finally {
+      setSaving(false);
     }
+  };
+
+  const openEditModal = async (userToEdit) => {
+    setSelectedUser(userToEdit);
+    setEditFormData({
+      name: userToEdit.name || '',
+      email: userToEdit.email || '',
+      phone: userToEdit.phone || '',
+      cpf: userToEdit.cpf || '',
+      city: userToEdit.city || '',
+      state: userToEdit.state || 'MS',
+      user_type: userToEdit.user_type || 'particular',
+      status: userToEdit.status || 'active',
+      plan_type: userToEdit.plan_type || 'free',
+      creci: userToEdit.creci || '',
+      company: userToEdit.company || '',
+      cnpj: userToEdit.cnpj || '',
+      razao_social: userToEdit.razao_social || '',
+      bio: userToEdit.bio || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await adminAPIService.updateUser(selectedUser.id, editFormData);
+      toast.success('Usuário atualizado com sucesso!');
+      setShowEditModal(false);
+      setSelectedUser(null);
+      fetchUsers();
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast.error(error.response?.data?.detail || 'Erro ao atualizar usuário');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getUserTypeBadge = (type) => {
+    const config = {
+      particular: { label: 'Particular', className: 'bg-gray-100 text-gray-700' },
+      corretor: { label: 'Corretor', className: 'bg-blue-100 text-blue-700' },
+      imobiliaria: { label: 'Imobiliária', className: 'bg-purple-100 text-purple-700' },
+      admin: { label: 'Admin', className: 'bg-red-100 text-red-700' },
+      admin_senior: { label: 'Admin Sênior', className: 'bg-orange-100 text-orange-700' }
+    };
+    const c = config[type] || config.particular;
+    return <span className={`px-2 py-1 rounded text-xs font-semibold ${c.className}`}>{c.label}</span>;
+  };
+
+  const getStatusBadge = (status) => {
+    const config = {
+      active: { label: 'Ativo', className: 'bg-green-100 text-green-700' },
+      pending: { label: 'Pendente', className: 'bg-yellow-100 text-yellow-700' },
+      paused: { label: 'Pausado', className: 'bg-orange-100 text-orange-700' },
+      deleted: { label: 'Excluído', className: 'bg-red-100 text-red-700' }
+    };
+    const c = config[status] || config.active;
+    return <span className={`px-2 py-1 rounded text-xs font-semibold ${c.className}`}>{c.label}</span>;
   };
 
   return (
@@ -166,7 +219,7 @@ const AdminGerenciarUsuarios = () => {
 
       <div className="bg-gradient-to-br from-red-600 to-red-800 text-white py-6">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
               <Link to="/admin/master">
                 <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
@@ -179,64 +232,42 @@ const AdminGerenciarUsuarios = () => {
                 <p className="text-red-100 text-sm">Administração de todos os usuários da plataforma</p>
               </div>
             </div>
-            <Button 
-              onClick={() => setShowAddModal(true)}
-              className="bg-white text-red-600 hover:bg-gray-100"
-            >
-              <UserPlus size={18} className="mr-2" />
-              Adicionar Usuário
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={fetchUsers} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                <RefreshCw size={18} />
+              </Button>
+              <Button onClick={() => setShowAddModal(true)} className="bg-white text-red-600 hover:bg-gray-100">
+                <UserPlus size={18} className="mr-2" />
+                Novo Usuário
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <Filter size={20} className="text-gray-600" />
-              <h3 className="font-bold text-gray-800">Filtros</h3>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <RefreshCw size={14} />
-              <span>Última atualização: {lastUpdated ? lastUpdated.toLocaleTimeString() : '-'}</span>
-              <Button size="sm" variant="outline" onClick={() => fetchUsers()}>
-                <RefreshCw size={14} className="mr-1" />
-                Atualizar
-              </Button>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-              <select
-                value={filter.status}
-                onChange={(e) => setFilter({ ...filter, status: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-              >
-                <option value="">Todos</option>
-                <option value="active">Ativo</option>
-                <option value="pending">Pendente</option>
-                <option value="paused">Pausado</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-              <select
-                value={filter.userType}
-                onChange={(e) => setFilter({ ...filter, userType: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-              >
-                <option value="">Todos</option>
-                <option value="particular">Particular</option>
-                <option value="corretor">Corretor</option>
-              </select>
-            </div>
-            <div className="flex items-end">
-              <Button onClick={() => fetchUsers()} className="w-full bg-red-600 hover:bg-red-700">
-                Aplicar Filtros
-              </Button>
+        <div className="bg-white rounded-lg shadow-lg p-4 mb-6">
+          <div className="flex items-center gap-4 flex-wrap">
+            <Filter size={20} className="text-gray-500" />
+            <span className="text-sm font-semibold text-gray-700">Filtrar por tipo:</span>
+            <div className="flex gap-2 flex-wrap">
+              {['', 'particular', 'corretor', 'imobiliaria', 'admin_senior'].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setFilter(type)}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
+                    filter === type
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {type === '' ? 'Todos' : 
+                   type === 'particular' ? 'Particular' : 
+                   type === 'corretor' ? 'Corretor' : 
+                   type === 'imobiliaria' ? 'Imobiliária' : 'Admin Sênior'}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -265,8 +296,8 @@ const AdminGerenciarUsuarios = () => {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Email</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Tipo</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Plano</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Imóveis</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Cidade</th>
                     <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Ações</th>
                   </tr>
                 </thead>
@@ -278,26 +309,30 @@ const AdminGerenciarUsuarios = () => {
                         <p className="text-xs text-gray-500">{u.phone}</p>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">{u.email}</td>
+                      <td className="px-4 py-3">{getUserTypeBadge(u.user_type)}</td>
+                      <td className="px-4 py-3">{getStatusBadge(u.status)}</td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                          u.user_type === 'corretor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                          u.plan_type === 'lifetime' ? 'bg-purple-100 text-purple-700' :
+                          u.plan_type === 'anual' ? 'bg-blue-100 text-blue-700' :
+                          u.plan_type === 'trimestral' ? 'bg-green-100 text-green-700' :
+                          'bg-gray-100 text-gray-700'
                         }`}>
-                          {u.user_type}
+                          {u.plan_type || 'free'}
                         </span>
                       </td>
+                      <td className="px-4 py-3 text-sm text-gray-700 text-center">{u.properties_count}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                          u.status === 'active' ? 'bg-green-100 text-green-700' :
-                          u.status === 'pending' ? 'bg-orange-100 text-orange-700' :
-                          'bg-red-100 text-red-700'
-                        }`}>
-                          {u.status === 'active' ? 'Ativo' : u.status === 'pending' ? 'Pendente' : 'Pausado'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{u.properties_count}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{u.city} - {u.state}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1">
+                          {/* Edit Button */}
+                          <button
+                            onClick={() => openEditModal(u)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+                            title="Editar Usuário"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          {/* Status Buttons */}
                           {u.status !== 'active' && (
                             <button
                               onClick={() => handleStatusChange(u.id, 'active')}
@@ -307,7 +342,7 @@ const AdminGerenciarUsuarios = () => {
                               <UserCheck size={16} />
                             </button>
                           )}
-                          {u.status !== 'paused' && (
+                          {u.status !== 'paused' && u.user_type !== 'admin' && (
                             <button
                               onClick={() => handleStatusChange(u.id, 'paused')}
                               className="p-2 text-orange-600 hover:bg-orange-50 rounded"
@@ -316,13 +351,16 @@ const AdminGerenciarUsuarios = () => {
                               <Pause size={16} />
                             </button>
                           )}
-                          <button
-                            onClick={() => confirmDeleteUser(u.id, u.name)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded"
-                            title="Excluir"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          {/* Delete Button */}
+                          {u.user_type !== 'admin' && (
+                            <button
+                              onClick={() => confirmDeleteUser(u.id, u.name)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded"
+                              title="Excluir"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -334,174 +372,315 @@ const AdminGerenciarUsuarios = () => {
         </div>
       </div>
 
-      {/* Modal: Add User */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-800">Adicionar Novo Usuário</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-gray-500 hover:text-gray-700">
-                <X size={24} />
-              </button>
+      {/* Add User Modal */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Adicionar Novo Usuário</DialogTitle>
+            <DialogDescription>Preencha os dados para criar um novo usuário</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateUser} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <Label>Nome Completo *</Label>
+                <Input
+                  value={newUserData.name}
+                  onChange={(e) => setNewUserData({...newUserData, name: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Email *</Label>
+                <Input
+                  type="email"
+                  value={newUserData.email}
+                  onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Senha *</Label>
+                <Input
+                  type="password"
+                  value={newUserData.password}
+                  onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                  required
+                  minLength={6}
+                />
+              </div>
+              <div>
+                <Label>Telefone</Label>
+                <Input
+                  value={newUserData.phone}
+                  onChange={(e) => setNewUserData({...newUserData, phone: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label>CPF</Label>
+                <Input
+                  value={newUserData.cpf}
+                  onChange={(e) => setNewUserData({...newUserData, cpf: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label>Tipo de Usuário *</Label>
+                <select
+                  value={newUserData.user_type}
+                  onChange={(e) => setNewUserData({...newUserData, user_type: e.target.value})}
+                  className="w-full border rounded-md p-2"
+                  required
+                >
+                  <option value="particular">Particular</option>
+                  <option value="corretor">Corretor</option>
+                  <option value="imobiliaria">Imobiliária</option>
+                  <option value="admin_senior">Admin Sênior</option>
+                </select>
+              </div>
+              <div>
+                <Label>Estado</Label>
+                <select
+                  value={newUserData.state}
+                  onChange={(e) => setNewUserData({...newUserData, state: e.target.value})}
+                  className="w-full border rounded-md p-2"
+                >
+                  {states.map(s => (
+                    <option key={s.code} value={s.code}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="col-span-2">
+                <Label>Cidade</Label>
+                <Input
+                  value={newUserData.city}
+                  onChange={(e) => setNewUserData({...newUserData, city: e.target.value})}
+                />
+              </div>
+              {(newUserData.user_type === 'corretor' || newUserData.user_type === 'imobiliaria') && (
+                <div className="col-span-2">
+                  <Label>CRECI</Label>
+                  <Input
+                    value={newUserData.creci}
+                    onChange={(e) => setNewUserData({...newUserData, creci: e.target.value})}
+                    placeholder="Ex: CRECI 12345/MS"
+                  />
+                </div>
+              )}
             </div>
-            <form onSubmit={handleCreateUser} className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
-                  <input
-                    type="text"
-                    value={newUser.name}
-                    onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                    required
-                  />
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowAddModal(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? 'Salvando...' : 'Criar Usuário'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit User Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit size={20} />
+              Editar Usuário
+            </DialogTitle>
+            <DialogDescription>
+              Editando: {selectedUser?.name} ({selectedUser?.email})
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleUpdateUser} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Dados Pessoais */}
+              <div className="col-span-2 bg-gray-50 p-3 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <Eye size={16} /> Dados Pessoais
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2">
+                    <Label>Nome Completo</Label>
+                    <Input
+                      value={editFormData.name}
+                      onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label>Email</Label>
+                    <Input
+                      type="email"
+                      value={editFormData.email}
+                      onChange={(e) => setEditFormData({...editFormData, email: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label>Telefone</Label>
+                    <Input
+                      value={editFormData.phone}
+                      onChange={(e) => setEditFormData({...editFormData, phone: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label>CPF</Label>
+                    <Input
+                      value={editFormData.cpf}
+                      onChange={(e) => setEditFormData({...editFormData, cpf: e.target.value})}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                  <input
-                    type="email"
-                    value={newUser.email}
-                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                    required
-                  />
+              </div>
+
+              {/* Localização */}
+              <div className="col-span-2 bg-gray-50 p-3 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <MapPin size={16} /> Localização
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Cidade</Label>
+                    <Input
+                      value={editFormData.city}
+                      onChange={(e) => setEditFormData({...editFormData, city: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label>Estado</Label>
+                    <select
+                      value={editFormData.state}
+                      onChange={(e) => setEditFormData({...editFormData, state: e.target.value})}
+                      className="w-full border rounded-md p-2"
+                    >
+                      {states.map(s => (
+                        <option key={s.code} value={s.code}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Senha Provisória *</label>
-                  <input
-                    type="password"
-                    value={newUser.password}
-                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                    required
-                  />
+              </div>
+
+              {/* Tipo e Status */}
+              <div className="col-span-2 bg-blue-50 p-3 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <CreditCard size={16} /> Tipo, Status e Plano
+                </h4>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <Label>Tipo de Usuário</Label>
+                    <select
+                      value={editFormData.user_type}
+                      onChange={(e) => setEditFormData({...editFormData, user_type: e.target.value})}
+                      className="w-full border rounded-md p-2"
+                    >
+                      <option value="particular">Particular</option>
+                      <option value="corretor">Corretor</option>
+                      <option value="imobiliaria">Imobiliária</option>
+                      <option value="admin_senior">Admin Sênior</option>
+                      <option value="admin">Admin Master</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label>Status</Label>
+                    <select
+                      value={editFormData.status}
+                      onChange={(e) => setEditFormData({...editFormData, status: e.target.value})}
+                      className="w-full border rounded-md p-2"
+                    >
+                      <option value="active">Ativo</option>
+                      <option value="pending">Pendente</option>
+                      <option value="paused">Pausado</option>
+                      <option value="deleted">Excluído</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label>Plano</Label>
+                    <select
+                      value={editFormData.plan_type}
+                      onChange={(e) => setEditFormData({...editFormData, plan_type: e.target.value})}
+                      className="w-full border rounded-md p-2"
+                    >
+                      <option value="free">Free</option>
+                      <option value="trimestral">Trimestral</option>
+                      <option value="anual">Anual</option>
+                      <option value="lifetime">Vitalício</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Telefone *</label>
-                  <input
-                    type="text"
-                    value={newUser.phone}
-                    onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                    placeholder="(67) 99999-9999"
-                    required
-                  />
+              </div>
+
+              {/* Dados Profissionais (Corretor/Imobiliária) */}
+              {(editFormData.user_type === 'corretor' || editFormData.user_type === 'imobiliaria') && (
+                <div className="col-span-2 bg-purple-50 p-3 rounded-lg">
+                  <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <Building2 size={16} /> Dados Profissionais
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>CRECI</Label>
+                      <Input
+                        value={editFormData.creci}
+                        onChange={(e) => setEditFormData({...editFormData, creci: e.target.value})}
+                        placeholder="Ex: CRECI 12345/MS"
+                      />
+                    </div>
+                    <div>
+                      <Label>Empresa/Imobiliária</Label>
+                      <Input
+                        value={editFormData.company}
+                        onChange={(e) => setEditFormData({...editFormData, company: e.target.value})}
+                      />
+                    </div>
+                    {editFormData.user_type === 'imobiliaria' && (
+                      <>
+                        <div>
+                          <Label>CNPJ</Label>
+                          <Input
+                            value={editFormData.cnpj}
+                            onChange={(e) => setEditFormData({...editFormData, cnpj: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label>Razão Social</Label>
+                          <Input
+                            value={editFormData.razao_social}
+                            onChange={(e) => setEditFormData({...editFormData, razao_social: e.target.value})}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CPF *</label>
-                  <input
-                    type="text"
-                    value={newUser.cpf}
-                    onChange={(e) => setNewUser({ ...newUser, cpf: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                    placeholder="000.000.000-00"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Usuário *</label>
-                  <select
-                    value={newUser.user_type}
-                    onChange={(e) => setNewUser({ ...newUser, user_type: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                  >
-                    <option value="particular">Particular</option>
-                    <option value="corretor">Corretor</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
-                  <input
-                    type="text"
-                    value={newUser.city}
-                    onChange={(e) => setNewUser({ ...newUser, city: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                  <select
-                    value={newUser.state}
-                    onChange={(e) => setNewUser({ ...newUser, state: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                  >
-                    {states.map(s => (
-                      <option key={s.code} value={s.code}>{s.name}</option>
-                    ))}
-                  </select>
-                </div>
-                {newUser.user_type === 'corretor' && (
+              )}
+
+              {/* Bio */}
+              <div className="col-span-2">
+                <Label>Bio / Descrição</Label>
+                <textarea
+                  value={editFormData.bio}
+                  onChange={(e) => setEditFormData({...editFormData, bio: e.target.value})}
+                  className="w-full border rounded-md p-2 h-20"
+                  placeholder="Descrição do usuário..."
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+                {saving ? (
+                  'Salvando...'
+                ) : (
                   <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">CRECI</label>
-                      <input
-                        type="text"
-                        value={newUser.creci}
-                        onChange={(e) => setNewUser({ ...newUser, creci: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                        placeholder="CRECI-MS 00000"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Empresa/Imobiliária</label>
-                      <input
-                        type="text"
-                        value={newUser.company}
-                        onChange={(e) => setNewUser({ ...newUser, company: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                      />
-                    </div>
+                    <Save size={16} className="mr-2" />
+                    Salvar Alterações
                   </>
                 )}
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <Button type="button" variant="outline" onClick={() => setShowAddModal(false)}>
-                  Cancelar
-                </Button>
-                <Button type="submit" className="bg-red-600 hover:bg-red-700">
-                  <UserPlus size={18} className="mr-2" />
-                  Criar Usuário
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Confirm Delete */}
-      {showDeleteModal && userToDelete && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-            <div className="p-6">
-              <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
-                <Trash2 className="text-red-600" size={24} />
-              </div>
-              <h3 className="text-xl font-bold text-center text-gray-800 mb-2">Confirmar Exclusão</h3>
-              <p className="text-center text-gray-600 mb-4">
-                Tem certeza que deseja excluir permanentemente o usuário <strong>{userToDelete.name}</strong>?
-              </p>
-              <p className="text-center text-red-600 text-sm mb-6">
-                ⚠️ Esta ação irá remover o usuário e TODOS os seus imóveis cadastrados. Esta ação não pode ser desfeita!
-              </p>
-              <div className="flex gap-3">
-                <Button 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => { setShowDeleteModal(false); setUserToDelete(null); }}
-                >
-                  Cancelar
-                </Button>
-                <Button 
-                  className="flex-1 bg-red-600 hover:bg-red-700"
-                  onClick={handleDeleteUser}
-                >
-                  Excluir Permanentemente
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
