@@ -56,6 +56,16 @@ export const adminAPIService = {
     return response.data;
   },
 
+  updateUser: async (userId, userData) => {
+    const response = await adminAPI.put(`/users/${userId}`, userData);
+    return response.data;
+  },
+
+  getUser: async (userId) => {
+    const response = await adminAPI.get(`/users/${userId}`);
+    return response.data;
+  },
+
   deleteUser: async (userId) => {
     const response = await adminAPI.delete(`/users/${userId}`);
     return response.data;
