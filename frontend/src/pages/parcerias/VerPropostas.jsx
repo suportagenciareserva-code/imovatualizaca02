@@ -307,7 +307,7 @@ const VerPropostas = () => {
                   {formatCurrency(demand.valor_minimo)} - {formatCurrency(demand.valor_maximo)}
                 </span>
                 <Badge className="bg-green-100 text-green-800">
-                  {demand.comissao_parceiro}% comissão
+                  {String(demand.comissao_parceiro).replace('.', ',')}% comissão
                 </Badge>
               </CardDescription>
             </CardHeader>
