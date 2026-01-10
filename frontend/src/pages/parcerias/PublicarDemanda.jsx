@@ -97,7 +97,7 @@ const PublicarDemanda = () => {
         bairros_interesse: formData.bairros_interesse,
         valor_minimo: parseFloat(formData.valor_minimo),
         valor_maximo: parseFloat(formData.valor_maximo),
-        comissao_parceiro: parseInt(formData.comissao_parceiro),
+        comissao_parceiro: parseFloat(formData.comissao_parceiro),
         dormitorios_min: formData.dormitorios_min ? parseInt(formData.dormitorios_min) : null,
         vagas_garagem_min: formData.vagas_garagem_min ? parseInt(formData.vagas_garagem_min) : null,
         area_util_min: formData.area_util_min ? parseFloat(formData.area_util_min) : null,
