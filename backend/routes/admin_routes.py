@@ -247,35 +247,107 @@ async def get_all_users(
     return users_response
 
 @router.put("/users/{user_id}")
-async def update_user_status(
+async def update_user(
     user_id: str,
     user_update: UserUpdate,
     admin = Depends(get_current_admin)
 ):
-    """Update user status or type (Admin only)"""
+    """Update user (Admin only) - Full edit capability"""
     user = await db.users.find_one({"id": user_id})
     
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            detail="Usuário não encontrado"
         )
     
-    if user.get('user_type') == 'admin':
+    if user.get('user_type') == 'admin' and admin.get('id') != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Cannot modify admin users"
+            detail="Não é permitido modificar outros administradores"
         )
     
+    # Build update data from non-None fields
     update_data = {}
-    if user_update.status:
-        update_data['status'] = user_update.status
-    if user_update.user_type:
-        update_data['user_type'] = user_update.user_type
+    update_dict = user_update.dict(exclude_unset=True)
     
-    await db.users.update_one({"id": user_id}, {"$set": update_data})
+    for key, value in update_dict.items():
+        if value is not None:
+            update_data[key] = value
     
-    return {"message": "User updated successfully", "user_id": user_id}
+    # Validate email uniqueness if changing email
+    if 'email' in update_data and update_data['email'] != user.get('email'):
+        existing = await db.users.find_one({"email": update_data['email']})
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email já está em uso por outro usuário"
+            )
+    
+    # Validate user_type
+    if 'user_type' in update_data:
+        valid_types = ['particular', 'corretor', 'imobiliaria', 'admin', 'admin_senior']
+        if update_data['user_type'] not in valid_types:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Tipo de usuário inválido. Use: {', '.join(valid_types)}"
+            )
+    
+    # Validate status
+    if 'status' in update_data:
+        valid_statuses = ['active', 'pending', 'paused', 'deleted']
+        if update_data['status'] not in valid_statuses:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Status inválido. Use: {', '.join(valid_statuses)}"
+            )
+    
+    # Validate plan_type
+    if 'plan_type' in update_data:
+        valid_plans = ['free', 'trimestral', 'anual', 'lifetime']
+        if update_data['plan_type'] not in valid_plans:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Plano inválido. Use: {', '.join(valid_plans)}"
+            )
+    
+    if update_data:
+        update_data['updated_at'] = datetime.utcnow()
+        await db.users.update_one({"id": user_id}, {"$set": update_data})
+    
+    # Get updated user
+    updated_user = await db.users.find_one({"id": user_id})
+    
+    return {
+        "message": "Usuário atualizado com sucesso",
+        "user_id": user_id,
+        "updated_fields": list(update_data.keys())
+    }
+
+
+@router.get("/users/{user_id}")
+async def get_user_details(
+    user_id: str,
+    admin = Depends(get_current_admin)
+):
+    """Get detailed user info (Admin only)"""
+    user = await db.users.find_one({"id": user_id})
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuário não encontrado"
+        )
+    
+    # Count properties
+    properties_count = await db.properties.count_documents({"owner_id": user_id})
+    
+    # Remove sensitive data
+    user.pop('hashed_password', None)
+    user.pop('_id', None)
+    user['properties_count'] = properties_count
+    
+    return user
 
 @router.delete("/users/{user_id}")
 async def delete_user(
