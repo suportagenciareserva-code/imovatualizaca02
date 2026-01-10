@@ -171,7 +171,7 @@ const DemandaDetalhes = () => {
                 </CardDescription>
               </div>
               <Badge className="bg-green-100 text-green-800 text-lg px-4 py-2">
-                {demand.comissao_parceiro}% de comissão
+                {String(demand.comissao_parceiro).replace('.', ',')}% de comissão
               </Badge>
             </div>
           </CardHeader>
