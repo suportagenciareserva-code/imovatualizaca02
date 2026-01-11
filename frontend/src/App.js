@@ -39,12 +39,14 @@ import DemandaDetalhes from "./pages/parcerias/DemandaDetalhes.jsx";
 import VerPropostas from "./pages/parcerias/VerPropostas.jsx";
 
 import { Toaster } from "./components/ui/sonner";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 
 function App() {
   return (
     <div className="App">
       <AuthProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
