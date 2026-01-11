@@ -438,6 +438,20 @@ const AdminGerenciarUsuarios = () => {
                 </select>
               </div>
               <div>
+                <Label>Plano *</Label>
+                <select
+                  value={newUserData.plan_type}
+                  onChange={(e) => setNewUserData({...newUserData, plan_type: e.target.value})}
+                  className="w-full border rounded-md p-2"
+                  required
+                >
+                  <option value="free">Free</option>
+                  <option value="trimestral">Trimestral</option>
+                  <option value="anual">Anual</option>
+                  <option value="lifetime">Vitalício</option>
+                </select>
+              </div>
+              <div>
                 <Label>Estado</Label>
                 <select
                   value={newUserData.state}
