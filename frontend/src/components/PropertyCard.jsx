@@ -31,7 +31,7 @@ const PropertyCard = ({ property }) => {
     : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop';
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+    <div className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${property.is_featured ? 'ring-2 ring-yellow-400' : ''}`}>
       {/* Property Image - Clickable */}
       <Link to={`/imovel/${property.id}`}>
         <div className="relative h-48 overflow-hidden">
@@ -48,11 +48,25 @@ const PropertyCard = ({ property }) => {
           }`}>
             {property.purpose}
           </div>
-          {property.is_launch && (
-            <div className="absolute top-3 right-3 px-3 py-1 rounded-md font-bold text-sm bg-orange-500 text-white">
-              LANÇAMENTO
-            </div>
-          )}
+          
+          {/* Right side badges */}
+          <div className="absolute top-3 right-3 flex flex-col gap-1">
+            {property.is_featured && (
+              <div className="px-2 py-1 rounded-md font-bold text-xs bg-yellow-500 text-white flex items-center gap-1">
+                ⭐ DESTAQUE
+              </div>
+            )}
+            {property.is_launch && (
+              <div className="px-2 py-1 rounded-md font-bold text-xs bg-orange-500 text-white">
+                LANÇAMENTO
+              </div>
+            )}
+            {property.is_exclusive && (
+              <div className="px-2 py-1 rounded-md font-bold text-xs bg-purple-600 text-white flex items-center gap-1">
+                🔒 EXCLUSIVO
+              </div>
+            )}
+          </div>
         </div>
       </Link>
 
