@@ -213,7 +213,7 @@ const SearchBar = () => {
                   disabled={!searchData.city || loadingNeighborhoods}
                 >
                   <option value="">
-                    {loadingNeighborhoods ? 'Carregando...' : !searchData.city ? 'Selecione a cidade' : 'Todos os bairros'}
+                    {loadingNeighborhoods ? 'Carregando...' : !searchData.city ? 'Selecione o bairro' : 'Todos os bairros'}
                   </option>
                   {neighborhoods.map((neighborhood, index) => (
                     <option key={index} value={neighborhood}>{neighborhood}</option>
