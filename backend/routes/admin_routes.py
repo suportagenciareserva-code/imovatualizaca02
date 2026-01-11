@@ -164,6 +164,7 @@ async def create_user(user_data: UserCreate, admin = Depends(get_current_admin))
         'user_type': user_data.user_type,
         'creci': user_data.creci,
         'company': user_data.company,
+        'plan_type': user_data.plan_type or 'free',
         'status': 'active',  # New users created by admin are active by default
         'hashed_password': pwd_context.hash(user_data.password),
         'created_at': datetime.utcnow()
