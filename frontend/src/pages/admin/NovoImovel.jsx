@@ -441,16 +441,19 @@ const NovoImovel = () => {
                 </div>
 
                 <div>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      name="is_launch"
-                      checked={formData.is_launch}
-                      onChange={handleChange}
-                      className="rounded"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Marcar como lançamento</span>
-                  </label>
+                  {/* Marcar como Lançamento - Apenas para Imobiliárias */}
+                  {user?.user_type === 'imobiliaria' && (
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        name="is_launch"
+                        checked={formData.is_launch}
+                        onChange={handleChange}
+                        className="rounded"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Marcar como lançamento</span>
+                    </label>
+                  )}
                 </div>
               </div>
             </div>
