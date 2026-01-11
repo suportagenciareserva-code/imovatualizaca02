@@ -74,12 +74,22 @@ const AdminMasterDashboard = () => {
               </div>
             </div>
             <div className="flex gap-3">
-              <Link to="/">
+              <Link to="/admin/dashboard">
                 <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                   <Home size={18} className="mr-2" />
-                  Voltar ao Site
+                  Dashboard Usuário
                 </Button>
               </Link>
+              <Button 
+                variant="outline" 
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                onClick={() => {
+                  logout();
+                  navigate('/');
+                }}
+              >
+                Sair
+              </Button>
             </div>
           </div>
         </div>
