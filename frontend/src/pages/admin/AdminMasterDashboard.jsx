@@ -88,6 +88,7 @@ const AdminMasterDashboard = () => {
                   navigate('/');
                 }}
               >
+                <LogOut size={18} className="mr-2" />
                 Sair
               </Button>
             </div>
